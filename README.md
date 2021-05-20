@@ -11,6 +11,8 @@ Then, when deploying files back to filesystem from repository, you run `opim.pl`
 to read saved OPI from file and restore it to deployed files providing same
 ownership and permissions as were in the original filesystem.
 ## Usage
+**Note:** elevated privileges (e.g. using `sudo`) often required to traverse filesystem and change ownership or permissions.
+
 Collect OPI from filesystem and save to file:
 ```
 opim.pl [-{i|x} ignore_pattern] [-d directory] [-o] [-f file]
