@@ -21,11 +21,14 @@ my @Ignore_Replace;
 my $Overwrite_If_Exists = undef;
 my $File = '.opinfo';
 
+
+## Shortcut for printing info messages
 sub V
 {
 	print "@_\n";
 }
 
+## Read OPI from FS entry; decend to subdirectories when applicable
 sub read_fs_entry
 {
 	my ($path) = @_;
@@ -48,7 +51,6 @@ sub read_fs_entry
 					push(@children, read_fs_entry($entry));
 				}
 				closedir($d);
-				chdir($orig_cwd);
 				if (@children)
 				{
 					$r->{c} = [];
@@ -59,11 +61,13 @@ sub read_fs_entry
 			{
 				warn $!;
 			}
+			chdir($orig_cwd);
 		}
 	}
 	return $r;
 }
 
+## Recover OPI, traverse subdirectories when applicable
 sub recover_opi
 {
 	my ($dir, $long_dir, $opi, $no_changes)=@_;
@@ -141,6 +145,14 @@ sub main
 	
 	pod2usage(EX_USAGE) if not $rc;
 	pod2usage(EX_OK) if $Print_Usage_And_Exit;
+	if (@Ignore_Replace)
+	{
+		@Ignore = ('.', '..', @Ignore_Replace);
+	}
+	if (@Ignore_Extra)
+	{
+	    push(@Ignore, @Ignore_Extra);
+	}
 
 	if ($Restore)
 	{
@@ -215,7 +227,7 @@ opim.pl -R [-n] [-f file] [-d directory]
 =head2 Common options:
 
 -d directory to read OPI from or restore to.
-   Default is '.'
+   Default is current directory.
 
 -f file to store OPI to or read from.
    Default is '.opinfo'
@@ -224,7 +236,7 @@ opim.pl -R [-n] [-f file] [-d directory]
 
 -i add pattern to ignore.
    Can be used multiple times.
-   Default ignore patterns are: '.', '..', '.git'.
+   Default is to ignore '.git'.
 
 -x replace default ignore patterns with given.
    Can be used multiple times.
